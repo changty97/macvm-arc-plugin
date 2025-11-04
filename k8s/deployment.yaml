@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: macvm-arc-plugin
+  labels:
+    app: macvm-arc-plugin
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: macvm-arc-plugin
+  template:
+    metadata:
+      labels:
+        app: macvm-arc-plugin
+    spec:
+      containers:
+      - name: macvm-arc-plugin
+        image: your-dockerhub-username/macvm-arc-plugin:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+        env:
+        - name: PLUGIN_PORT
+          value: "8080"
+        - name: MACVMAGT_URL
+          valueFrom:
+            configMapKeyRef:
+              name: macvm-arc-plugin-config
+              key: macvmagt-url
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: macvm-arc-plugin
+spec:
+  selector:
+    app: macvm-arc-plugin
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
