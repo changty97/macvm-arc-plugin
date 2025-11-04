@@ -29,3 +29,6 @@ go.work.sum
 
 # Editor/IDE
 .vscode/
+
+# Python venv for pre-commit hooks
+venv/
