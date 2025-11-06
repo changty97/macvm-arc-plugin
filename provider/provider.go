@@ -61,6 +61,11 @@ func (p *MacVMProvider) CreateRunner(ctx context.Context, runnerName string, tok
 	}
 	defer resp.Body.Close()
 
+	if resp.StatusCode != http.StatusOK {
+		errorBody, _ := io.ReadAll(resp.Body)
+		return fmt.Errorf("macvm agent returned non-200 status code %d. Response: %s", resp.StatusCode, string(errorBody))
+	}
+
 	respBody, _ := io.ReadAll(resp.Body)
 	if resp.StatusCode != http.StatusAccepted {
 		return fmt.Errorf("unexpected status code %d: %s", resp.StatusCode, string(respBody))
@@ -88,6 +93,11 @@ func (p *MacVMProvider) DeleteRunner(ctx context.Context, vmID string) error {
 	}
 	defer resp.Body.Close()
 
+	if resp.StatusCode != http.StatusOK {
+		errorBody, _ := io.ReadAll(resp.Body)
+		return fmt.Errorf("macvm agent returned non-200 status code %d. Response: %s", resp.StatusCode, string(errorBody))
+	}
+
 	respBody, _ := io.ReadAll(resp.Body)
 	if resp.StatusCode != http.StatusOK {
 		return fmt.Errorf("unexpected delete status %d: %s", resp.StatusCode, string(respBody))
@@ -105,6 +115,11 @@ func (p *MacVMProvider) ListVMs(ctx context.Context) error {
 		return fmt.Errorf("failed to list vms: %w", err)
 	}
 	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		errorBody, _ := io.ReadAll(resp.Body)
+		return fmt.Errorf("macvm agent returned non-200 status code %d. Response: %s", resp.StatusCode, string(errorBody))
+	}
 
 	body, _ := io.ReadAll(resp.Body)
 	fmt.Println("[macvm-arc-plugin] Current VM state:\n", string(body))
